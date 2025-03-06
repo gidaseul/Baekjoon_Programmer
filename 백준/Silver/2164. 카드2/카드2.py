@@ -1,13 +1,9 @@
-import sys
-import collections as col
+import math
 
-deq = col.deque()
-n = int(sys.stdin.readline())
-for i in range(n):
-    deq.append(i+1)
+def find_last_card(N):
+    M = 2 ** math.floor(math.log2(N))
+    last_card = 2 * (N - M)
+    return last_card if last_card != 0 else N
 
-while len(deq) > 1:
-    deq.popleft()
-    deq.rotate(-1)
-
-print(deq[0])
+N=int(input())
+print(find_last_card(N))
