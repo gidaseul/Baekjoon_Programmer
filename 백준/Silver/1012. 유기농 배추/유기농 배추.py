@@ -43,5 +43,4 @@ for _ in range(t):
                 result += 1
 
     print(result)
-
     
