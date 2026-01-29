@@ -9,90 +9,32 @@
 
 <p align="center">
   <a href="./백준">
-    <img src="## 🧩 Platforms Overview
-
-<p align="center">
-  <a href="./백준">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/66/BOJ_logo.png" height="40"/>
-    <br/>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/66/BOJ_logo.png" height="45"/><br/>
     <b>Baekjoon</b>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
 
   <a href="./프로그래머스">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Programmers_logo.png" height="40"/>
-    <br/>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Programmers_logo.png" height="45"/><br/>
     <b>Programmers</b>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
 
   <a href="./SWEA">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Samsung_Logo.svg" height="40"/>
-    <br/>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Samsung_Logo.svg" height="45"/><br/>
     <b>SWEA</b>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
 
   <a href="./Codetree">
-    <img src="https://static.codet## 🧩 Platforms Overview
-
-<p align="center">
-  <a href="./백준">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/66/BOJ_logo.png" height="40"/><br/>
-    <b>Baekjoon</b>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-
-  <a href="./프로그래머스">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Programmers_logo.png" height="40"/><br/>
-    <b>Programmers</b>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-
-  <a href="./SWEA">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Samsung_Logo.svg" height="40"/><br/>
-    <b>SWEA</b>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-
-  <a href="./Codetree">
-    <img src="https://static.codetree.ai/logo.png" height="40"/><br/>
+    <img src="https://static.codetree.ai/logo.png" height="45"/><br/>
     <b>Codetree</b>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
 
   <a href="./Leetcode">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png" height="40"/><br/>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png" height="45"/><br/>
     <b>LeetCode</b>
-  </a>
-</p>ree.ai/logo.png" height="40"/>
-    <br/>
-    <b>Codetree</b>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-
-  <a href="./Leetcode">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png" height="40"/>
-    <br/>
-    <b>LeetCode</b>
-  </a>
-</p>" height="55"/>
-  </a>
-  &nbsp;&nbsp;&nbsp;
-  <a href="./프로그래머스">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Programmers_logo.png" height="55"/>
-  </a>
-  &nbsp;&nbsp;&nbsp;
-  <a href="./SWEA">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Samsung_Logo.svg" height="55"/>
-  </a>
-  &nbsp;&nbsp;&nbsp;
-  <a href="./Codetree">
-    <img src="https://static.codetree.ai/logo.png" height="55"/>
-  </a>
-  &nbsp;&nbsp;&nbsp;
-  <a href="./Leetcode">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png" height="55"/>
   </a>
 </p>
 
@@ -100,11 +42,10 @@
 
 ## 💻 Language Usage
 
-- 🐍 **Python**: 71%
-- ☕ **Java**: 29%
-
-![Python](https://img.shields.io/badge/Python-71%25-3776AB?logo=python&logoColor=white)
-![Java](https://img.shields.io/badge/Java-29%25-007396?logo=java&logoColor=white)
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-71%25-3776AB?logo=python&logoColor=white&style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Java-29%25-007396?logo=java&logoColor=white&style=for-the-badge"/>
+</p>
 
 ---
 
@@ -119,7 +60,7 @@
 | LeetCode | 7 | 2026-01-30 |
 
 **Total:** 103  
-Gold: 8 / Silver: 66 / Bronze: 28 / Level: 0
+**Difficulty:** Gold 8 / Silver 66 / Bronze 28 / Level 0
 <!-- STATS:END -->
 
 ---
@@ -142,7 +83,12 @@ Gold: 8 / Silver: 66 / Bronze: 28 / Level: 0
 
 ---
 
-### ⚙️ Automation Notes
+## ⚙️ Automation Notes
+
 - 문제 수 / 난이도 / 최근 커밋 날짜는 **GitHub Actions**로 자동 갱신됩니다.
-- 백준 · 프로그래머스 · SWEA는 **BaekjoonHub 기반 자동 커밋**  
-- LeetCode / Codetree는 **subtree + 수동 풀이 로그** 구조입니다.
+- **Baekjoon · Programmers · SWEA**
+  - BaekjoonHub 기반 **자동 커밋**
+- **LeetCode · Codetree**
+  - 개별 레포 → `git subtree` 로 통합 관리
+- README는  
+  **사람이 구조 관리 + Actions가 수치만 치환**하는 방식입니다.
