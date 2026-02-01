@@ -66,17 +66,6 @@
 
 ---
 
-## 🏷 Platforms (Auto Badges)
-<!-- BADGES:START -->
-![Baekjoon](https://img.shields.io/badge/Baekjoon-51-blue)
-![Programmers](https://img.shields.io/badge/Programmers-35-blue)
-![SWEA](https://img.shields.io/badge/SWEA-3-blue)
-![Codetree](https://img.shields.io/badge/Codetree-7-blue)
-![LeetCode](https://img.shields.io/badge/LeetCode-7-blue)
-<!-- BADGES:END -->
-
----
-
 ## 🕒 Last Updated
 <!-- UPDATED:START -->
 🕒 Last Auto Update: 2026-02-01 13:15 UTC
