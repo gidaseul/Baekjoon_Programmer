@@ -1,0 +1,34 @@
+name: Daily Codetree Maintenance
+
+on:
+  schedule:
+    # 매일 01:00 KST (UTC 16:00)
+    - cron: '0 16 * * *'
+  workflow_dispatch:  # 필요하면 수동 실행 가능
+
+jobs:
+  codetree-cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Move Codetree date folders
+        run: |
+          shopt -s nullglob
+          for dir in [0-9][0-9][0-9][0-9][0-9][0-9]; do
+            if [ -d "$dir" ]; then
+              mkdir -p Codetree
+              git mv "$dir" "Codetree/$dir"
+            fi
+          done
+
+      - name: Commit and push if changed
+        run: |
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git commit -m "chore: daily codetree folder cleanup"
+            git push
+          fi
