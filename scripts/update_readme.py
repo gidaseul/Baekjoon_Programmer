@@ -6,8 +6,25 @@ import re
 README_PATH = Path("README.md")
 
 # =========================
+# Timezone (KST)
+# =========================
+KST = timezone(timedelta(hours=9))
+
+
+def to_kst(date_str: str) -> str:
+    """
+    git %cs -> YYYY-MM-DD (KST 기준)
+    """
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    dt = dt.replace(tzinfo=timezone.utc).astimezone(KST)
+    return dt.strftime("%Y-%m-%d")
+
+
+
+# =========================
 # Git util
 # =========================
+
 def git_last_commit(path: Path) -> str | None:
     try:
         return subprocess.check_output(
@@ -91,11 +108,12 @@ def compute_stats():
         "last": last_commit_from_folders(pg),
     }
 
-    sw = scan_nested(Path("SWEA"))
+    sw = scan_nested(Path("SWEA"))  # ✅ SWEA도 폴더별 집계
     stats["SWEA"] = {
         "count": len(sw),
         "last": last_commit_from_folders(sw),
     }
+
 
     ct = scan_codetree()
     stats["Codetree"] = {
