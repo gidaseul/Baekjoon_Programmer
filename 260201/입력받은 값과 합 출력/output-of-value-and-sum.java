@@ -15,7 +15,7 @@ public class Main {
         int a = Integer.parseInt(st.nextToken());
         int b = Integer.parseInt(st.nextToken());
 
-        sb.append(b).append(" ").append(a).append(" ").append(a+b);
+        sb.append(a).append(" ").append(b).append(" ").append(a+b);
 
         System.out.println(sb.toString());
     }
