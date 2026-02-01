@@ -1,119 +1,95 @@
-import os
-import subprocess
-from datetime import datetime
+from pathlib import Path
+import re
 
-# === 기본 설정 ===
-PLATFORMS = {
-    "Baekjoon": "백준",
-    "Programmers": "프로그래머스",
-    "SWEA": "SWEA",
-    "Codetree": "Codetree",
-    "LeetCode": "Leetcode",
-}
+README_PATH = Path("README.md")
 
-EXTENSIONS = (".py", ".java", ".cpp", ".c")
+def count_dirs(path: Path) -> int:
+    if not path.exists():
+        return 0
+    return sum(1 for p in path.iterdir() if p.is_dir())
 
-DIFFICULTY_KEYWORDS = {
-    "Gold": ["Gold"],
-    "Silver": ["Silver"],
-    "Bronze": ["Bronze"],
-    "Level": ["level", "Level", "Lv"],
-}
+def count_nested_dirs(path: Path) -> int:
+    if not path.exists():
+        return 0
+    return sum(1 for p in path.rglob("*") if p.is_dir() and not any(p.iterdir()))
 
-# === 유틸 함수 ===
-def count_files(path):
-    count = 0
-    for root, _, files in os.walk(path):
-        for f in files:
-            if f.endswith(EXTENSIONS):
-                count += 1
-    return count
+# Codetree: 날짜/문제명
+def scan_codetree():
+    base = Path("Codetree")
+    total = 0
+    for day in base.iterdir():
+        if day.is_dir():
+            total += count_dirs(day)
+    return total
 
-def count_difficulty(path):
-    result = {k: 0 for k in DIFFICULTY_KEYWORDS}
-    for root, _, files in os.walk(path):
-        for f in files:
-            for k, keywords in DIFFICULTY_KEYWORDS.items():
-                if any(word in root or word in f for word in keywords):
-                    result[k] += 1
-                    break
+# Leetcode: 1문제 = 1폴더
+def scan_leetcode():
+    return count_dirs(Path("Leetcode"))
+
+# 백준: 티어/Bronze/문제명
+def scan_baekjoon():
+    base = Path("백준")
+    result = {}
+    for tier in base.iterdir():
+        if tier.is_dir():
+            result[tier.name] = count_dirs(tier)
     return result
 
-def last_commit_date(path):
-    try:
-        return subprocess.check_output(
-            ["git", "log", "-1", "--format=%cs", "--", path],
-            stderr=subprocess.DEVNULL,
-            text=True,
-        ).strip()
-    except:
-        return "N/A"
+# SWEA: D1/D2/문제명
+def scan_swea():
+    base = Path("SWEA")
+    result = {}
+    for level in base.iterdir():
+        if level.is_dir():
+            result[level.name] = count_dirs(level)
+    return result
 
-# === 통계 계산 ===
-platform_rows = []
-difficulty_total = {k: 0 for k in DIFFICULTY_KEYWORDS}
-total_count = 0
-latest_commit = "N/A"
+# 프로그래머스: 레벨 하위 문제 폴더
+def scan_programmers():
+    base = Path("프로그래머스")
+    total = 0
+    for level in base.iterdir():
+        if level.is_dir():
+            total += count_dirs(level)
+    return total
 
-for name, folder in PLATFORMS.items():
-    if not os.path.exists(folder):
-        continue
+def update_readme(stats: dict):
+    text = README_PATH.read_text(encoding="utf-8")
 
-    count = count_files(folder)
-    diff = count_difficulty(folder)
-    last = last_commit_date(folder)
+    def replace(section, value):
+        return re.sub(
+            rf"({section}\s*:\s*)(\d+)",
+            rf"\1{value}",
+            text
+        )
 
-    total_count += count
-    for k in diff:
-        difficulty_total[k] += diff[k]
+    replacements = {
+        "Codetree": stats["codetree"],
+        "LeetCode": stats["leetcode"],
+        "Programmers": stats["programmers"],
+        "Baekjoon": sum(stats["baekjoon"].values()),
+        "SWEA": sum(stats["swea"].values()),
+    }
 
-    platform_rows.append((name, count, last))
-    latest_commit = max(latest_commit, last)
+    for k, v in replacements.items():
+        text = re.sub(
+            rf"({k}\s*\|\s*)(\d+)",
+            rf"\1{v}",
+            text
+        )
 
-# === README 내용 생성 ===
-stats_md = ["| Platform | Problems | Last Commit |", "|---|---:|---|"]
-for name, cnt, last in platform_rows:
-    stats_md.append(f"| {name} | {cnt} | {last} |")
+    README_PATH.write_text(text, encoding="utf-8")
 
-stats_md.append(f"\n**Total:** {total_count}")
-stats_md.append(
-    " / ".join(f"{k}: {v}" for k, v in difficulty_total.items())
-)
+def main():
+    stats = {
+        "codetree": scan_codetree(),
+        "leetcode": scan_leetcode(),
+        "programmers": scan_programmers(),
+        "baekjoon": scan_baekjoon(),
+        "swea": scan_swea(),
+    }
 
-badges_md = [
-    f"![{name}](https://img.shields.io/badge/{name}-{cnt}-blue)"
-    for name, cnt, _ in platform_rows
-]
+    update_readme(stats)
 
-updated_md = f"🕒 Last Auto Update: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}"
-
-# === README 치환 ===
-with open("README.md", "r", encoding="utf-8") as f:
-    readme = f.read()
-
-def replace_block(text, start, end, content):
-    return text.split(start)[0] + start + "\n" + content + "\n" + end + text.split(end)[1]
-
-readme = replace_block(
-    readme,
-    "<!-- STATS:START -->",
-    "<!-- STATS:END -->",
-    "\n".join(stats_md),
-)
-
-readme = replace_block(
-    readme,
-    "<!-- BADGES:START -->",
-    "<!-- BADGES:END -->",
-    " ".join(badges_md),
-)
-
-readme = replace_block(
-    readme,
-    "<!-- UPDATED:START -->",
-    "<!-- UPDATED:END -->",
-    updated_md,
-)
-
-with open("README.md", "w", encoding="utf-8") as f:
-    f.write(readme)
+if __name__ == "__main__":
+    main()
