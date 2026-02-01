@@ -1,34 +1,44 @@
-name: Daily Codetree Maintenance
+name: Daily Codetree + README Update
 
 on:
   schedule:
-    # 매일 01:00 KST (UTC 16:00)
-    - cron: '0 16 * * *'
+    # 매일 23:50 KST (UTC 14:50)
+    - cron: '50 14 * * *'
   workflow_dispatch:
 
 jobs:
-  codetree-cleanup:
+  maintain:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
-      - name: Move Codetree date folders
+      - name: Move today's Codetree folder
+        shell: bash
         run: |
-          shopt -s nullglob
-          for dir in [0-9][0-9][0-9][0-9][0-9][0-9]; do
-            if [ -d "$dir" ] && [ ! -d "Codetree/$dir" ]; then
-              mkdir -p Codetree
-              git mv "$dir" "Codetree/$dir"
-            fi
-          done
+          TODAY=$(date -u -d "+9 hours" +"%y%m%d")
+          if [ -d "$TODAY" ] && [ ! -d "Codetree/$TODAY" ]; then
+            mkdir -p Codetree
+            git mv "$TODAY" "Codetree/$TODAY"
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Update README statistics
+        run: |
+          python scripts/update_readme.py
 
       - name: Commit and push if changed
         run: |
-          if ! git diff --cached --quiet; then
+          if ! git diff --quiet; then
             git config user.name "github-actions"
             git config user.email "github-actions@github.com"
-            git commit -m "chore: daily codetree folder cleanup"
+            git commit -m "chore: daily codetree sync and README update"
             git push
           fi
