@@ -53,11 +53,11 @@
 <!-- STATS:START -->
 | Platform | Problems | Last Commit |
 |---|---:|---|
-| Baekjoon | 51 | 2026-01-23 |
-| Programmers | 35 | 2026-01-27 |
-| SWEA | 3 | 2026-01-29 |
-| Codetree | 7 | 2026-01-30 |
-| LeetCode | 7 | 2026-01-30 |
+| Baekjoon | 51 | 2026-02-01 |
+| Programmers | 32 | 2026-02-01 |
+| SWEA | 5 | 2026-02-01 |
+| Codetree | 40 | 260201 |
+| LeetCode | 20 | 2026-02-01 |
 
 **Total:** 103  
 **Difficulty:** Gold 8 / Silver 66 / Bronze 28 / Level 0
