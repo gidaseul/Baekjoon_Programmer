@@ -58,9 +58,11 @@
 | SWEA | 2 | 2026-02-01 |
 | Codetree | 40 | 2026-02-01 |
 | LeetCode | 20 | 2026-02-01 |
-
-**Total:** 69
 <!-- STATS:END -->
+
+<!-- TOTAL:START -->
+**Total:** 69
+<!-- TOTAL:END -->
 
 ---
 
