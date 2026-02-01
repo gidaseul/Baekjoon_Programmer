@@ -1,6 +1,6 @@
 from pathlib import Path
 import subprocess
-from datetime import datetime, timedelta,timezone
+from datetime import datetime, timezone, timedelta
 import re
 
 README_PATH = Path("README.md")
