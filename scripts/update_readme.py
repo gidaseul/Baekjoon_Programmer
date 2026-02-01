@@ -5,99 +5,171 @@ import re
 
 README_PATH = Path("README.md")
 
-PLATFORMS = {
-    "Baekjoon": Path("백준"),
-    "Programmers": Path("프로그래머스"),
-    "SWEA": Path("SWEA"),
-    "Codetree": Path("Codetree"),
-    "LeetCode": Path("Leetcode"),
-}
-
-# ---------- 공통 유틸 ----------
-
-def count_dirs(path: Path) -> int:
-    if not path.exists():
-        return 0
-    return sum(1 for p in path.iterdir() if p.is_dir())
-
-def count_codetree():
-    base = Path("Codetree")
-    total = 0
-    if base.exists():
-        for day in base.iterdir():
-            if day.is_dir():
-                total += count_dirs(day)
-    return total
-
-def last_commit_date(path: Path) -> str:
+# =========================
+# Git util
+# =========================
+def git_last_commit(path: Path) -> str | None:
     try:
-        date = subprocess.check_output(
+        return subprocess.check_output(
             ["git", "log", "-1", "--format=%cs", "--", str(path)],
             stderr=subprocess.DEVNULL,
             text=True,
         ).strip()
-        return date
-    except:
-        return "N/A"
+    except Exception:
+        return None
 
-# ---------- 스캔 ----------
 
-def scan_stats():
-    rows = []
-    total = 0
+def last_commit_from_folders(folders: list[Path]) -> str:
+    dates = []
+    for f in folders:
+        d = git_last_commit(f)
+        if d:
+            dates.append(d)
+    return max(dates) if dates else "N/A"
 
-    for name, path in PLATFORMS.items():
-        if not path.exists():
-            continue
 
-        if name == "Codetree":
-            count = count_codetree()
-        else:
-            count = count_dirs(path)
+# =========================
+# Scan rules (네가 말한 그대로)
+# =========================
+def scan_codetree():
+    """
+    Codetree/YYYYMMDD/문제폴더
+    """
+    base = Path("Codetree")
+    problems = []
 
-        last = last_commit_date(path)
-        rows.append((name, count, last))
-        total += count
+    if base.exists():
+        for day in base.iterdir():
+            if day.is_dir():
+                for problem in day.iterdir():
+                    if problem.is_dir():
+                        problems.append(problem)
 
-    return rows, total
+    return problems
 
-# ---------- README 업데이트 ----------
 
-def update_readme():
-    rows, total = scan_stats()
-    now_utc = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+def scan_leetcode():
+    """
+    Leetcode/문제폴더
+    """
+    base = Path("Leetcode")
+    return [p for p in base.iterdir() if p.is_dir()] if base.exists() else []
 
+
+def scan_nested(base: Path):
+    """
+    백준 / SWEA / 프로그래머스
+    base/레벨/문제폴더
+    """
+    problems = []
+
+    if base.exists():
+        for level in base.iterdir():
+            if level.is_dir():
+                for problem in level.iterdir():
+                    if problem.is_dir():
+                        problems.append(problem)
+
+    return problems
+
+
+# =========================
+# Stats computation
+# =========================
+def compute_stats():
+    stats = {}
+
+    bj = scan_nested(Path("백준"))
+    stats["Baekjoon"] = {
+        "count": len(bj),
+        "last": last_commit_from_folders(bj),
+    }
+
+    pg = scan_nested(Path("프로그래머스"))
+    stats["Programmers"] = {
+        "count": len(pg),
+        "last": last_commit_from_folders(pg),
+    }
+
+    sw = scan_nested(Path("SWEA"))
+    stats["SWEA"] = {
+        "count": len(sw),
+        "last": last_commit_from_folders(sw),
+    }
+
+    ct = scan_codetree()
+    stats["Codetree"] = {
+        "count": len(ct),
+        "last": last_commit_from_folders(ct),
+    }
+
+    lc = scan_leetcode()
+    stats["LeetCode"] = {
+        "count": len(lc),
+        "last": last_commit_from_folders(lc),
+    }
+
+    return stats
+
+
+# =========================
+# README update
+# =========================
+def replace_block(text: str, start: str, end: str, content: str) -> str:
+    return text.split(start)[0] + start + "\n" + content + "\n" + end + text.split(end)[1]
+
+
+def update_readme(stats: dict):
+    readme = README_PATH.read_text(encoding="utf-8")
+
+    # --- Table ---
     table = [
         "| Platform | Problems | Last Commit |",
         "|---|---:|---|",
     ]
-    for name, cnt, last in rows:
-        table.append(f"| {name} | {cnt} | {last} |")
 
-    text = README_PATH.read_text(encoding="utf-8")
+    total = 0
+    for platform, data in stats.items():
+        table.append(f"| {platform} | {data['count']} | {data['last']} |")
+        total += data["count"]
 
-    def replace_block(start, end, content):
-        nonlocal text
-        text = re.sub(
-            rf"{start}.*?{end}",
-            f"{start}\n{content}\n{end}",
-            text,
-            flags=re.S,
-        )
+    # --- Total ---
+    total_md = f"**Total:** {total}"
 
-    replace_block(
+    # --- Last auto update ---
+    updated_md = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+
+    readme = replace_block(
+        readme,
         "<!-- STATS:START -->",
         "<!-- STATS:END -->",
-        "\n".join(table) + f"\n\n**Total:** {total}",
+        "\n".join(table),
     )
 
-    replace_block(
+    readme = replace_block(
+        readme,
+        "<!-- TOTAL:START -->",
+        "<!-- TOTAL:END -->",
+        total_md,
+    )
+
+    readme = replace_block(
+        readme,
         "<!-- UPDATED:START -->",
         "<!-- UPDATED:END -->",
-        f"🕒 Last Auto Update: {now_utc}",
+        f"🕒 Last Auto Update: {updated_md}",
     )
 
-    README_PATH.write_text(text, encoding="utf-8")
+    README_PATH.write_text(readme, encoding="utf-8")
+
+
+# =========================
+# Main
+# =========================
+def main():
+    stats = compute_stats()
+    update_readme(stats)
+
 
 if __name__ == "__main__":
-    update_readme()
+    main()
